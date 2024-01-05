@@ -55,7 +55,6 @@ class HttpComponent {
         }
     }
     writeResponse(value, headers = new Headers()) {
-        var _a;
         if (!this.readableStream) {
             headers.set("Transfer-Encoding", "chunked");
             let temp;
@@ -73,7 +72,6 @@ class HttpComponent {
                     temp = streamController;
                 },
             });
-            console.log("before - 2 -  ", (_a = this.readableStream) === null || _a === void 0 ? void 0 : _a.locked);
             this.streamController = temp;
             this.response = new Response(this.readableStream, {
                 headers: headers
@@ -85,10 +83,7 @@ class HttpComponent {
         }
     }
     endResponse() {
-        var _a, _b;
-        console.log("before - ", (_a = this.readableStream) === null || _a === void 0 ? void 0 : _a.locked);
         this.streamController.close();
-        console.log("after - ", (_b = this.readableStream) === null || _b === void 0 ? void 0 : _b.locked);
     }
     init(handlerFunction) {
         if (this.handler) {
@@ -178,28 +173,23 @@ function convertToUint8Array(body) {
     //     });
     // } else
     if (body instanceof ArrayBuffer) {
-        // If it's already an ArrayBuffer, create a Uint8Array directly
         return new Uint8Array(body);
     }
     else if (ArrayBuffer.isView(body)) {
-        // If it's an ArrayBufferView (e.g., TypedArray), create a Uint8Array directly
         return new Uint8Array(body.buffer, body.byteOffset, body.byteLength);
     }
     else if (typeof body === 'string') {
-        // If it's a string, encode it as UTF-8 and create a Uint8Array
         const encoder = new TextEncoder();
         const utf8Array = encoder.encode(body);
         return utf8Array;
     }
     else if (body instanceof URLSearchParams) {
-        // If it's FormData or URLSearchParams, convert it to a Uint8Array
         const encoder = new TextEncoder();
         const bodyString = body.toString();
         const utf8Array = encoder.encode(bodyString);
         return utf8Array;
     }
     else {
-        // For other types, return a rejected promise
         throw new Error('Unsupported body type');
     }
 }
